@@ -1,4 +1,4 @@
-import ConfigParser, logging, datetime, os
+import ConfigParser, logging, datetime, os, collections
 
 from flask import Flask, render_template, request
 
@@ -31,10 +31,18 @@ def search_results():
     now = datetime.datetime.now()
     results = mc.sentenceCount(keywords,
         solr_filter=[mc.publish_date_query( datetime.date( 2015, 1, 1), 
-                                            datetime.date( now.year, now.month, now.day) ),
-                     'media_sets_id:1' ])
+                                            datetime.date( 2015, 11, 23) ),
+                     'media_sets_id:1' ],split=True,split_start_date='2015-01-01',split_end_date='2015-11-23' )
+
+    sentenceCount = results['split']
+    orderedSentenceCount = collections.OrderedDict(sorted(sentenceCount.items() ))
+    orderedWeeks = [key[:10] for key in orderedSentenceCount.keys()[:-3]]
+    orderedCount = orderedSentenceCount.values()[:-3]
+
     return render_template("search-results.html", 
-        keywords=keywords, sentenceCount=results['count'] )
+        keywords=keywords, sentenceCount=results['count'], 
+        orderedSentenceCount=orderedSentenceCount, orderedWeeks=orderedWeeks, orderedCount=orderedCount)
+
 
 if __name__ == "__main__":
     app.debug = True

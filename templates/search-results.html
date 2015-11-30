@@ -7,12 +7,60 @@
 <div class="row">
 
   <div class="col-md-12">
-  
-    <h3>Search Results</h3>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+
+
+	<h3>Search Results</h3>
 
     <p>You searched for "{{keywords}}"</p>
 
     <p>In the US Mainstream Media online there have {{ sentenceCount }} sentences matching your search so far this year.</p>
+
+    <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+
+<script>
+//var sentences = {{ sentenceCount|tojson }};
+var orderedWeeks = {{ orderedWeeks|tojson }}
+var orderedCount = {{ orderedCount|tojson }}
+$(function () {
+    $('#container').highcharts({
+        title: {
+            text: 'Number of Mentions in the US Mainstream Media by Week',
+            x: -20 //center
+        },
+        
+        xAxis: { 
+            categories: orderedWeeks
+            //{{ orderedSentenceCount.keys()[:-3]|tojson }}
+             },
+        yAxis: {
+            title: {
+                text: 'Number of Mentions'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        series: [{
+            name: 'Count',
+            data: orderedCount
+            //{{ orderedSentenceCount.values()[:-3]|tojson }}
+        }]
+    });
+});
+</script>
+
 
   </div>
 
